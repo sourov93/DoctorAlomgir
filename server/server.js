@@ -10,6 +10,7 @@ import Admin from './models/Admin.js'
 import { sendAppointmentNotification } from './services/emailService.js'
 
 const app = express()
+app.set('trust proxy', 1)
 const port = process.env.PORT || 5000
 const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173'
 

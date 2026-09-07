@@ -1,0 +1,1 @@
+Additional Doctor, Service, Chamber, Gallery, and SiteSettings models can be added here when MongoDB content management is enabled. The public UI currently uses the validated fallback content in server.js and is ready to consume persisted records through /api/content.

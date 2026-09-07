@@ -11,6 +11,9 @@ build/
 .env.*
 !.env.example
 server/atlas-credentials.env
+server/.env
+server/.env.*
+!server/.env.example
 
 # Logs
 *.log

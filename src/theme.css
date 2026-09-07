@@ -1,0 +1,28 @@
+:root{--page:#f8fbfc;--surface:#fff;--surface-soft:#f3f8f7;--text:#122433;--text-muted:#657b84;--border:#d8e5e8;--nav-bg:rgba(248,251,252,.95);--input:#fbfdfd}
+[data-theme="dark"]{--navy:#071b2c;--teal:#62d2c1;--cream:#102a40;--page:#071b2c;--surface:#0c263b;--surface-soft:#102d45;--text:#edf7fb;--text-muted:#b0c3ce;--border:#25455b;--nav-bg:rgba(7,27,44,.94);--input:#102d45}
+[data-theme="dark"] body,[data-theme="dark"] .hero,[data-theme="dark"] .about-section,[data-theme="dark"] .gallery-section{background:var(--page);color:var(--text)}
+[data-theme="dark"] .site-header{background:var(--nav-bg);border-color:var(--border)}
+[data-theme="dark"] .nav-links,[data-theme="dark"] .doctor-role,[data-theme="dark"] .hero-intro,[data-theme="dark"] .hero-note,[data-theme="dark"] .section-heading p,[data-theme="dark"] .info-row p,[data-theme="dark"] .appointment-points,[data-theme="dark"] .emergency-inner p{color:var(--text-muted)}
+[data-theme="dark"] .section-heading h2,[data-theme="dark"] .hero h1,[data-theme="dark"] .about-quote p,[data-theme="dark"] .info-row b,[data-theme="dark"] label,[data-theme="dark"] .emergency-inner h2,[data-theme="dark"] .brand{color:var(--text)}
+[data-theme="dark"] .services-section,[data-theme="dark"] .appointment-section,[data-theme="dark"] .emergency-section{background:var(--surface-soft)}
+[data-theme="dark"] .chamber-section{background:#071b2c}
+[data-theme="dark"] .service-card,[data-theme="dark"] .info-row,[data-theme="dark"] .appointment-form,[data-theme="dark"] .admin-box,[data-theme="dark"] .admin-dashboard{background:var(--surface);border-color:var(--border)}
+[data-theme="dark"] .service-card h3,[data-theme="dark"] .service-card p{color:var(--text)}
+[data-theme="dark"] label input,[data-theme="dark"] label textarea{background:var(--input);border-color:var(--border);color:var(--text)}
+[data-theme="dark"] .button-outline{color:var(--text);border-color:var(--border)}
+[data-theme="dark"] .availability{background:#0c263b;border-color:#31566d}
+[data-theme="dark"] .about-quote{border-color:var(--border)}
+[data-theme="dark"] .info-icon{background:#e5f4f1;color:#078b8b}
+[data-theme="dark"] .hero{background:linear-gradient(120deg,#071b2c 0%,#0b2940 100%)}
+[data-theme="dark"] .hero:before{background:radial-gradient(circle at 20% 50%,rgba(50,176,163,.13),transparent 65%)}
+[data-theme="dark"] .chamber-section{background:linear-gradient(135deg,#061827,#09253a)}
+[data-theme="dark"] .map-card{background-color:#0b2940;background-image:linear-gradient(135deg,rgba(6,24,39,.78),rgba(10,53,72,.7)),url('/assets/gallery.jpg')}
+label select{display:block;width:100%;border:1px solid #dce8e9;border-radius:5px;padding:12px 13px;margin-top:7px;outline:0;color:#38505a;background:#fbfdfd;font-size:12px}label select:focus{border-color:#7ec7be;box-shadow:0 0 0 3px #e9f7f4}[data-theme="dark"] label select{background:var(--input);border-color:var(--border);color:var(--text)}
+.appointment-form:has(input[name="patientName"]:valid):has(input[name="phone"]:valid):has(input[name="preferredDate"]:valid):has(select[name="preferredTime"]:valid) .submit-button{background:#129a72;box-shadow:0 8px 20px rgba(18,154,114,.22)}
+.appointment-form:has(input[name="patientName"]:valid):has(input[name="phone"]:valid):has(input[name="preferredDate"]:valid):has(select[name="preferredTime"]:valid) .submit-button:hover{background:#087d5b}
+.form-message.success{display:flex;align-items:center;min-height:58px;padding:15px 18px;border:1px solid #78d6bc;border-left:5px solid #119b72;border-radius:7px;background:#e5faf2;color:#056b55;font-size:13px;font-weight:800;box-shadow:0 8px 20px rgba(7,107,85,.1)}
+[data-theme="dark"] .form-message.success{background:#0d423c;border-color:#287d70;border-left-color:#62d2c1;color:#d9fff5;box-shadow:none}
+.nav-controls{display:flex;align-items:center;gap:8px;order:3;margin-left:16px}.language-select,.theme-toggle{height:34px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--navy);font-size:11px;font-weight:800;padding:0 8px;cursor:pointer}.theme-toggle{display:grid;place-items:center;width:34px;padding:0}.language-select:focus,.theme-toggle:focus{outline:3px solid rgba(98,210,193,.28)}
+[data-theme="dark"] .language-select,[data-theme="dark"] .theme-toggle{background:#0c263b;color:#edf7fb;border-color:#31566d}
+[data-theme="dark"] .language-select option{background:#0c263b;color:#edf7fb}
+@media(max-width:700px){.nav-controls{margin-left:auto}.nav-wrap{gap:8px}.nav-links{order:4}.nav-controls .menu-toggle{display:block}.nav-links.is-open{background:var(--surface)}}

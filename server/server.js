@@ -1,4 +1,5 @@
 import 'dotenv/config'
+import dotenv from 'dotenv'
 import express from 'express'
 import cors from 'cors'
 import mongoose from 'mongoose'
@@ -7,6 +8,9 @@ import jwt from 'jsonwebtoken'
 import rateLimit from 'express-rate-limit'
 import Appointment from './models/Appointment.js'
 import Admin from './models/Admin.js'
+import { sendAppointmentNotification } from './services/emailService.js'
+
+dotenv.config({ path: 'server/.env', override: true })
 
 const app = express()
 const port = process.env.PORT || 5000
@@ -34,8 +38,17 @@ app.get('/api/content', (_req, res) => res.json(fallbackContent))
 app.post('/api/appointments', appointmentLimiter, async (req, res) => {
   const { patientName, phone, preferredDate, preferredTime, email, message } = req.body
   if (!patientName || !phone || !preferredDate || !preferredTime) return res.status(400).json({ message: 'Required fields are missing' })
+  const appointmentDate = new Date(`${preferredDate}T00:00:00`)
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(preferredDate) || Number.isNaN(appointmentDate.getTime()) || appointmentDate < today) return res.status(400).json({ message: 'Please select today or a future date' })
+  if (!/^\d{2}:\d{2}$/.test(preferredTime) || preferredTime < '15:00' || preferredTime > '20:00') return res.status(400).json({ message: 'Appointments are available from 3:00 PM to 8:00 PM' })
   if (!mongoose.connection.readyState) return res.status(503).json({ message: 'Appointment service is not configured yet' })
-  try { const appointment = await Appointment.create({ patientName, phone, preferredDate, preferredTime, email, message }); res.status(201).json({ message: 'Appointment request received', id: appointment.id }) } catch (error) { res.status(500).json({ message: 'Could not save appointment', error: error.message }) }
+  try {
+    const appointment = await Appointment.create({ patientName, phone, preferredDate, preferredTime, email, message })
+    const notification = await sendAppointmentNotification(appointment)
+    res.status(201).json({ success: true, message: notification.sent ? 'Appointment request received' : 'Appointment request received. Email notification could not be sent.', id: appointment.id })
+  } catch (error) { res.status(500).json({ success: false, message: 'Could not save appointment' }) }
 })
 app.post('/api/auth/login', async (req, res) => {
   const { email, password } = req.body

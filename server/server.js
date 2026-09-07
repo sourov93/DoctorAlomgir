@@ -1,5 +1,4 @@
 import 'dotenv/config'
-import dotenv from 'dotenv'
 import express from 'express'
 import cors from 'cors'
 import mongoose from 'mongoose'
@@ -9,8 +8,6 @@ import rateLimit from 'express-rate-limit'
 import Appointment from './models/Appointment.js'
 import Admin from './models/Admin.js'
 import { sendAppointmentNotification } from './services/emailService.js'
-
-dotenv.config({ path: 'server/.env', override: true })
 
 const app = express()
 const port = process.env.PORT || 5000
@@ -58,4 +55,6 @@ app.post('/api/auth/login', async (req, res) => {
 if (process.env.MONGODB_URI) mongoose.connect(process.env.MONGODB_URI).then(async () => { console.log('MongoDB connected'); if (process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD && !(await Admin.exists({ email: process.env.ADMIN_EMAIL }))) await Admin.create({ email: process.env.ADMIN_EMAIL, passwordHash: await bcrypt.hash(process.env.ADMIN_PASSWORD, 12) }) }).catch(error => console.error('MongoDB connection failed:', error.message))
 else console.warn('MONGODB_URI is not configured; appointment persistence is disabled.')
 
-app.listen(port, () => console.log(`API listening on http://localhost:${port}`))
+if (!process.env.VERCEL) app.listen(port, () => console.log(`API listening on http://localhost:${port}`))
+
+export default app

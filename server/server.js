@@ -19,7 +19,7 @@ app.use(express.json({ limit: '100kb' }))
 const appointmentLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 30, standardHeaders: true, legacyHeaders: false })
 
 const fallbackContent = {
-  doctor: { name: 'ডাঃ মোঃ আলমগীর জলিল প্রামাণিক', designation: 'সহকারী অধ্যাপক, সার্জারি বিভাগ', institution: 'রংপুর মেডিকেল কলেজ হাসপাতাল, রংপুর', specialization: 'ল্যাপারোস্কোপিক সার্জন / ল্যাপারোস্কোপিক সার্জারি বিশেষজ্ঞ', introduction: 'ডাঃ মোঃ আলমগীর জলিল প্রামাণিক একজন ল্যাপারোস্কোপিক সার্জন এবং সার্জারি বিভাগের সহকারী অধ্যাপক। তিনি আধুনিক ল্যাপারোস্কোপিক পদ্ধতিতে বিভিন্ন ধরনের সার্জিক্যাল রোগের চিকিৎসা ও অপারেশন সেবা প্রদান করেন।', image: '/assets/doctor.jpg' },
+  doctor: { name: 'ডাঃ মোঃ আলমগীর জলিল প্রামানিক', designation: 'সহকারী অধ্যাপক, সার্জারি বিভাগ', institution: 'রংপুর মেডিকেল কলেজ হাসপাতাল, রংপুর', specialization: 'ল্যাপারোস্কোপিক সার্জন / ল্যাপারোস্কোপিক সার্জারি বিশেষজ্ঞ', introduction: 'ডাঃ মোঃ আলমগীর জলিল প্রামানিক একজন ল্যাপারোস্কোপিক সার্জন এবং সার্জারি বিভাগের সহকারী অধ্যাপক। তিনি আধুনিক ল্যাপারোস্কোপিক পদ্ধতিতে বিভিন্ন ধরনের সার্জিক্যাল রোগের চিকিৎসা ও অপারেশন সেবা প্রদান করেন।', image: '/assets/doctor.jpg' },
   contacts: { serial: '01788-044279', emergency: '0155-9617223', whatsapp: '8801788044279' },
   chamber: { name: 'মাউন্ট প্যাসিফিক হাসপাতাল', address: 'রংপুর, বাংলাদেশ', visitingDays: 'ভিজিটিং ডে শীঘ্রই আপডেট করা হবে', visitingHours: 'বিকাল ৩টা থেকে রাত ৮টা পর্যন্ত', mapUrl: 'https://www.google.com/maps/search/?api=1&query=Mount+Pacific+Hospital+Rangpur+Bangladesh' },
   services: [

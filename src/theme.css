@@ -24,5 +24,6 @@ label select{display:block;width:100%;border:1px solid #dce8e9;border-radius:5px
 [data-theme="dark"] .form-message.success{background:#0d423c;border-color:#287d70;border-left-color:#62d2c1;color:#d9fff5;box-shadow:none}
 .nav-controls{display:flex;align-items:center;gap:8px;order:3;margin-left:16px}.language-select,.theme-toggle{height:34px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--navy);font-size:11px;font-weight:800;padding:0 8px;cursor:pointer}.theme-toggle{display:grid;place-items:center;width:34px;padding:0}.language-select:focus,.theme-toggle:focus{outline:3px solid rgba(98,210,193,.28)}
 [data-theme="dark"] .language-select,[data-theme="dark"] .theme-toggle{background:#0c263b;color:#edf7fb;border-color:#31566d}
+[data-theme="dark"] .menu-toggle{color:#edf7fb}
 [data-theme="dark"] .language-select option{background:#0c263b;color:#edf7fb}
 @media(max-width:700px){.nav-controls{margin-left:auto}.nav-wrap{gap:8px}.nav-links{order:4}.nav-controls .menu-toggle{display:block}.nav-links.is-open{background:var(--surface)}}

@@ -16,7 +16,7 @@
 [data-theme="dark"] .hero{background:linear-gradient(120deg,#071b2c 0%,#0b2940 100%)}
 [data-theme="dark"] .hero:before{background:radial-gradient(circle at 20% 50%,rgba(50,176,163,.13),transparent 65%)}
 [data-theme="dark"] .chamber-section{background:linear-gradient(135deg,#061827,#09253a)}
-[data-theme="dark"] .map-card{background-color:#0b2940;background-image:linear-gradient(135deg,rgba(6,24,39,.78),rgba(10,53,72,.7)),url('/assets/gallery.jpg')}
+[data-theme="dark"] .map-card{background:#0b2940}[data-theme="dark"] .map-frame{filter:saturate(.9) brightness(.92)}
 label select{display:block;width:100%;border:1px solid #dce8e9;border-radius:5px;padding:12px 13px;margin-top:7px;outline:0;color:#38505a;background:#fbfdfd;font-size:12px}label select:focus{border-color:#7ec7be;box-shadow:0 0 0 3px #e9f7f4}[data-theme="dark"] label select{background:var(--input);border-color:var(--border);color:var(--text)}
 .appointment-form:has(input[name="patientName"]:valid):has(input[name="phone"]:valid):has(input[name="preferredDate"]:valid):has(select[name="preferredTime"]:valid) .submit-button{background:#129a72;box-shadow:0 8px 20px rgba(18,154,114,.22)}
 .appointment-form:has(input[name="patientName"]:valid):has(input[name="phone"]:valid):has(input[name="preferredDate"]:valid):has(select[name="preferredTime"]:valid) .submit-button:hover{background:#087d5b}

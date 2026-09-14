@@ -8,13 +8,21 @@ import rateLimit from 'express-rate-limit'
 import Appointment from './models/Appointment.js'
 import Admin from './models/Admin.js'
 import { sendAppointmentNotification } from './services/emailService.js'
+import { requireAuth } from './middleware/auth.js'
 
 const app = express()
 app.set('trust proxy', 1)
 const port = process.env.PORT || 5000
 const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173'
+// Credentials and signing key are read from .env on each development-server restart.
 
-app.use(cors({ origin: clientUrl }))
+app.use(cors({
+  origin(origin, callback) {
+    // Permit the configured production client and local Vite development ports.
+    if (!origin || origin === clientUrl || /^http:\/\/localhost:\d+$/.test(origin)) return callback(null, true)
+    return callback(new Error('Origin not allowed by CORS'))
+  }
+}))
 app.use(express.json({ limit: '100kb' }))
 const appointmentLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 30, standardHeaders: true, legacyHeaders: false })
 
@@ -49,11 +57,60 @@ app.post('/api/appointments', appointmentLimiter, async (req, res) => {
   } catch (error) { res.status(500).json({ success: false, message: 'Could not save appointment' }) }
 })
 app.post('/api/auth/login', async (req, res) => {
-  const { email, password } = req.body
-  try { const admin = await Admin.findOne({ email }); if (!admin || !(await bcrypt.compare(password, admin.passwordHash))) return res.status(401).json({ message: 'Invalid credentials' }); const token = jwt.sign({ id: admin.id, email: admin.email }, process.env.JWT_SECRET, { expiresIn: '8h' }); res.json({ token }) } catch { res.status(500).json({ message: 'Login unavailable' }) }
+  const identifier = String(req.body.email || req.body.username || '').trim().toLowerCase()
+  const password = String(req.body.password || '')
+  if (!identifier || !password) return res.status(400).json({ message: 'Username/email and password are required' })
+  if (!process.env.JWT_SECRET) return res.status(503).json({ message: 'Login is not configured' })
+  try {
+    // Treat harmless dots/spaces in a displayed username consistently (e.g. Dr.Alamgir / Dr. Alamgir).
+    const usernamePattern = identifier.split(/[.\s]+/).filter(Boolean).map(part => part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('[.\\s]*')
+    const admin = await Admin.findOne({ $or: [{ email: identifier }, { username: identifier }, ...(usernamePattern ? [{ username: { $regex: `^${usernamePattern}$`, $options: 'i' } }] : [])] })
+    if (!admin || !(await bcrypt.compare(password, admin.passwordHash))) return res.status(401).json({ message: 'Invalid credentials' })
+    const token = jwt.sign({ id: admin.id, email: admin.email, role: admin.role }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN || '8h' })
+    res.json({ token, admin: { email: admin.email, role: admin.role } })
+  } catch { res.status(500).json({ message: 'Login unavailable' }) }
 })
 
-if (process.env.MONGODB_URI) mongoose.connect(process.env.MONGODB_URI).then(async () => { console.log('MongoDB connected'); if (process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD && !(await Admin.exists({ email: process.env.ADMIN_EMAIL }))) await Admin.create({ email: process.env.ADMIN_EMAIL, passwordHash: await bcrypt.hash(process.env.ADMIN_PASSWORD, 12) }) }).catch(error => console.error('MongoDB connection failed:', error.message))
+app.get('/api/admin/dashboard', requireAuth, async (_req, res) => {
+  try {
+    const [total, pending, confirmed, latest] = await Promise.all([
+      Appointment.countDocuments(), Appointment.countDocuments({ status: 'pending' }),
+      Appointment.countDocuments({ status: 'confirmed' }), Appointment.find().sort({ createdAt: -1 }).limit(5).lean()
+    ])
+    res.json({ total, pending, confirmed, galleryImages: 3, latest })
+  } catch { res.status(500).json({ message: 'Could not load dashboard' }) }
+})
+
+app.get('/api/admin/appointments', requireAuth, async (req, res) => {
+  const page = Math.max(1, Number.parseInt(req.query.page, 10) || 1)
+  const limit = Math.min(50, Math.max(1, Number.parseInt(req.query.limit, 10) || 10))
+  const search = String(req.query.search || '').trim()
+  const status = String(req.query.status || '').trim()
+  const query = {}
+  if (['pending', 'contacted', 'confirmed', 'cancelled'].includes(status)) query.status = status
+  if (search) query.$or = [{ patientName: { $regex: search, $options: 'i' } }, { phone: { $regex: search, $options: 'i' } }]
+  try {
+    const [items, total] = await Promise.all([Appointment.find(query).sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit).lean(), Appointment.countDocuments(query)])
+    res.json({ items, total, page, pages: Math.max(1, Math.ceil(total / limit)) })
+  } catch { res.status(500).json({ message: 'Could not load appointments' }) }
+})
+
+app.patch('/api/admin/appointments/:id/status', requireAuth, async (req, res) => {
+  const status = String(req.body.status || '')
+  if (!['pending', 'contacted', 'confirmed', 'cancelled'].includes(status)) return res.status(400).json({ message: 'Invalid status' })
+  try {
+    const appointment = await Appointment.findByIdAndUpdate(req.params.id, { status }, { new: true, runValidators: true })
+    if (!appointment) return res.status(404).json({ message: 'Appointment not found' })
+    res.json(appointment)
+  } catch { res.status(400).json({ message: 'Could not update appointment' }) }
+})
+
+if (process.env.MONGODB_URI) mongoose.connect(process.env.MONGODB_URI).then(async () => {
+  console.log('MongoDB connected')
+  if (process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD && !(await Admin.exists({ email: process.env.ADMIN_EMAIL }))) {
+    await Admin.create({ username: process.env.ADMIN_USERNAME, email: process.env.ADMIN_EMAIL, passwordHash: await bcrypt.hash(process.env.ADMIN_PASSWORD, 12), role: 'admin' })
+  }
+}).catch(error => console.error('MongoDB connection failed:', error.message))
 else console.warn('MONGODB_URI is not configured; appointment persistence is disabled.')
 
 if (!process.env.VERCEL) app.listen(port, () => console.log(`API listening on http://localhost:${port}`))

@@ -3,6 +3,7 @@
 [data-theme="dark"] body,[data-theme="dark"] .hero,[data-theme="dark"] .about-section,[data-theme="dark"] .gallery-section{background:var(--page);color:var(--text)}
 [data-theme="dark"] .site-header{background:var(--nav-bg);border-color:var(--border)}
 [data-theme="dark"] .nav-links,[data-theme="dark"] .doctor-role,[data-theme="dark"] .hero-intro,[data-theme="dark"] .hero-note,[data-theme="dark"] .section-heading p,[data-theme="dark"] .info-row p,[data-theme="dark"] .appointment-points,[data-theme="dark"] .emergency-inner p{color:var(--text-muted)}
+[data-theme="dark"] .nav-admin{color:var(--text)}
 [data-theme="dark"] .section-heading h2,[data-theme="dark"] .hero h1,[data-theme="dark"] .about-quote p,[data-theme="dark"] .info-row b,[data-theme="dark"] label,[data-theme="dark"] .emergency-inner h2,[data-theme="dark"] .brand{color:var(--text)}
 [data-theme="dark"] .services-section,[data-theme="dark"] .appointment-section,[data-theme="dark"] .emergency-section{background:var(--surface-soft)}
 [data-theme="dark"] .chamber-section{background:#071b2c}

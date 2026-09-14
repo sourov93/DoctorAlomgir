@@ -14,15 +14,29 @@ const app = express()
 app.set('trust proxy', 1)
 const port = process.env.PORT || 5000
 const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173'
-// Credentials and signing key are read from .env on each development-server restart.
+const configuredOrigins = [clientUrl, process.env.ALLOWED_ORIGINS]
+  .filter(Boolean)
+  .flatMap(value => value.split(','))
+  .map(value => value.trim().replace(/\/$/, ''))
+  .filter(Boolean)
 
-app.use(cors({
+const corsOptions = {
   origin(origin, callback) {
-    // Permit the configured production client and local Vite development ports.
-    if (!origin || origin === clientUrl || /^http:\/\/localhost:\d+$/.test(origin)) return callback(null, true)
-    return callback(new Error('Origin not allowed by CORS'))
-  }
-}))
+    // Browsers always send an http(s) Origin. No Origin is reserved for trusted
+    // non-browser/server-to-server calls; file:// values are deliberately excluded.
+    if (!origin) return callback(null, true)
+    const normalizedOrigin = origin.replace(/\/$/, '')
+    const isLocalDevelopment = /^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(normalizedOrigin)
+    if (isLocalDevelopment || configuredOrigins.includes(normalizedOrigin)) return callback(null, true)
+    return callback(null, false)
+  },
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 204
+}
+
+app.use(cors(corsOptions))
+app.options('*', cors(corsOptions))
 app.use(express.json({ limit: '100kb' }))
 const appointmentLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 30, standardHeaders: true, legacyHeaders: false })
 
@@ -53,7 +67,8 @@ app.post('/api/appointments', appointmentLimiter, async (req, res) => {
   try {
     const appointment = await Appointment.create({ patientName, phone, preferredDate, preferredTime, email, message })
     const notification = await sendAppointmentNotification(appointment)
-    res.status(201).json({ success: true, message: notification.sent ? 'Appointment request received' : 'Appointment request received. Email notification could not be sent.', id: appointment.id })
+    // The appointment is already persisted even when optional email delivery fails.
+    res.status(201).json({ success: true, message: 'Appointment request received', id: appointment.id })
   } catch (error) { res.status(500).json({ success: false, message: 'Could not save appointment' }) }
 })
 app.post('/api/auth/login', async (req, res) => {
